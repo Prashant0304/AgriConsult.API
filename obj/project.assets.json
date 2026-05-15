@@ -392,11 +392,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "D:\\90days-crack\\AgriConsult.API\\AgriConsult.API.csproj",
       "projectName": "AgriConsult.API",
       "projectPath": "D:\\90days-crack\\AgriConsult.API\\AgriConsult.API.csproj",
       "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
       "outputPath": "D:\\90days-crack\\AgriConsult.API\\obj\\",
+=======
+      "projectUniqueName": "D:\\90days-crack\\portpolioUsingDotNet.API\\portpolioUsingDotNet.API.csproj",
+      "projectName": "portpolioUsingDotNet.API",
+      "projectPath": "D:\\90days-crack\\portpolioUsingDotNet.API\\portpolioUsingDotNet.API.csproj",
+      "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
+      "outputPath": "D:\\90days-crack\\portpolioUsingDotNet.API\\obj\\",
+>>>>>>> 7fc43f55595efe8a0e7147d5a23af7d1ecdf317a
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

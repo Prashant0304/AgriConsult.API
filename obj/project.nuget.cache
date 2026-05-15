@@ -1,8 +1,14 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "UbLoCyPulzo=",
   "success": true,
   "projectFilePath": "D:\\90days-crack\\AgriConsult.API\\AgriConsult.API.csproj",
+=======
+  "dgSpecHash": "FWvB7ESV59w=",
+  "success": true,
+  "projectFilePath": "D:\\90days-crack\\portpolioUsingDotNet.API\\portpolioUsingDotNet.API.csproj",
+>>>>>>> 7fc43f55595efe8a0e7147d5a23af7d1ecdf317a
   "expectedPackageFiles": [
     "C:\\Users\\Asus\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.0\\microsoft.aspnetcore.openapi.8.0.0.nupkg.sha512",
     "C:\\Users\\Asus\\.nuget\\packages\\microsoft.extensions.apidescription.server\\8.0.0\\microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",

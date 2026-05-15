@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"Version":1,"Hash":"wsMuJcWx/HyPgm8ZnEI7KvfvUE32KCP5JnAvVqGcoqI=","Source":"AgriConsult.API","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+=======
+{"Version":1,"Hash":"dVycrTIweEdybEMBHXchWF/ZxjHdyf29ZCZVQTo4RQw=","Source":"portpolioUsingDotNet.API","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+>>>>>>> 7fc43f55595efe8a0e7147d5a23af7d1ecdf317a

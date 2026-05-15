@@ -1,0 +1,6 @@
+@portpolioUsingDotNet.API_HostAddress = http://localhost:5254
+
+GET {{portpolioUsingDotNet.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
