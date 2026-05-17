@@ -160,12 +160,48 @@ v1 keeps working. Clients migrate at their own pace.
 
 ---
 
-## 📊 90-Day Challenge Progress
+cat >> README.md << 'EOF'
 
-- [x] Day 1 — Middleware Pipeline ✅
-- [x] Day 2 — REST API Best Practices ✅
-- [ ] Day 3 — Entity Framework Core
-- [ ] Day 4 — JWT Authentication
-- [ ] Day 5 — SOLID Principles
-- [ ] Day 6 — SOLID Principles continued
-- [ ] Day 7 — Weekend Build: Task Manager API
+---
+
+### Day 3 — Entity Framework Core & Real Database
+
+**What I built:**
+
+- Connected .NET 8 API to real SQL Server database using Entity Framework Core
+- Created Expert entity (C# class → SQL table automatically)
+- Wrote AppDbContext as the bridge between C# and database
+- Generated database migration using EF Core tools
+- Applied migration — AgriConsultDB and Experts table created automatically
+- All endpoints now read/write from real SQL Server database
+
+**Proof it works:**
+
+- POST /api/v1/experts → 201 Created → data saved to SQL Server
+- GET /api/v1/experts → 200 OK → data returned from real database
+- DELETE /api/v1/experts/{id} → 204 No Content → record removed from DB
+
+**Key concepts learned:**
+
+- EF Core is an ORM — maps C# classes to database tables automatically
+- DbContext is the bridge between C# and the database
+- Migration = snapshot of your model → generates SQL automatically
+- `dotnet ef migrations add` = create snapshot
+- `dotnet ef database update` = apply to database
+- Connection string issues: Encrypt=False needed for local SQL Server dev
+
+**Errors fixed today:**
+
+- Invalid JSON in appsettings.json — nested { } blocks
+- SSL certificate error — fixed with Encrypt=False for localhost
+- Duplicate route endpoints — removed old hardcoded endpoints
+- Class nested inside class in AppDbContext — fixed structure
+
+**How to run:**
+
+```bash
+cd AgriConsult.API
+ASPNETCORE_ENVIRONMENT=Development dotnet run --no-launch-profile
+```
+
+**Connection string (local dev only):**

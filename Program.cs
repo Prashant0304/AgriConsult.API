@@ -1,7 +1,15 @@
+using AgriConsult.API.Data;
+using AgriConsult.API.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -11,7 +19,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Day 1 Middleware — Logging
+// ── Day 1: Middleware — Logging ──────────────────────────────
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"→ REQUEST: {context.Request.Method} {context.Request.Path}");
@@ -21,38 +29,34 @@ app.Use(async (context, next) =>
 
 app.UseHttpsRedirection();
 
-// ── Day 2: REST API Best Practices ──────────────────────────
+// ── Day 2 + Day 3: Experts Endpoints (Real Database) ────────
 
-// 200 OK — returns list
-app.MapGet("/api/v1/experts", () =>
+// GET all experts — from real database
+app.MapGet("/api/v1/experts", async (AppDbContext db) =>
 {
-    var experts = new[]
-    {
-        new { Id = 1, Name = "Dr. Ramesh Kumar", Specialization = "Soil Health", Fee = 500 },
-        new { Id = 2, Name = "Dr. Priya Nair",   Specialization = "Pest Control", Fee = 400 },
-    };
-    return Results.Ok(experts); // 200
+    var experts = await db.Experts.ToListAsync();
+    return Results.Ok(experts);
 })
 .WithName("GetExperts");
 
-// 200 OK — returns single expert, 404 if not found
-app.MapGet("/api/v1/experts/{id}", (int id) =>
+// GET single expert by id — from real database
+app.MapGet("/api/v1/experts/{id}", async (int id, AppDbContext db) =>
 {
-    if (id == 1)
-    {
-        var expert = new { Id = 1, Name = "Dr. Ramesh Kumar", Specialization = "Soil Health", Fee = 500 };
-        return Results.Ok(expert); // 200
-    }
-    // 404 - not found
-    return Results.NotFound(new { status = 404, message = $"Expert with id {id} not found" });
+    var expert = await db.Experts.FindAsync(id);
+    if (expert is null)
+        return Results.NotFound(new
+        {
+            status = 404,
+            message = $"Expert with id {id} not found"
+        });
+    return Results.Ok(expert);
 })
 .WithName("GetExpertById");
 
-// 201 Created — create new expert
-app.MapPost("/api/v1/experts", (ExpertRequest request) =>
+// POST create expert — saves to real database
+app.MapPost("/api/v1/experts", async (Expert expert, AppDbContext db) =>
 {
-    // 400 - validation
-    if (string.IsNullOrWhiteSpace(request.Name))
+    if (string.IsNullOrWhiteSpace(expert.Name))
     {
         return Results.BadRequest(new
         {
@@ -61,25 +65,26 @@ app.MapPost("/api/v1/experts", (ExpertRequest request) =>
             errors = new[] { "Name is required" }
         });
     }
-
-    // pretend we saved it and got id = 3
-    var created = new { Id = 3, request.Name, request.Specialization, request.Fee };
-    return Results.Created($"/api/v1/experts/3", created); // 201
+    db.Experts.Add(expert);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/v1/experts/{expert.Id}", expert);
 })
 .WithName("CreateExpert");
 
-// 204 No Content — delete
-app.MapDelete("/api/v1/experts/{id}", (int id) =>
+// DELETE expert — removes from real database
+app.MapDelete("/api/v1/experts/{id}", async (int id, AppDbContext db) =>
 {
-    if (id != 1 && id != 2)
-    {
-        return Results.NotFound(new { status = 404, message = $"Expert {id} not found" });
-    }
-    return Results.NoContent(); // 204
+    var expert = await db.Experts.FindAsync(id);
+    if (expert is null)
+        return Results.NotFound(new
+        {
+            status = 404,
+            message = $"Expert {id} not found"
+        });
+    db.Experts.Remove(expert);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
 })
 .WithName("DeleteExpert");
 
 app.Run();
-
-// Request model
-record ExpertRequest(string Name, string Specialization, int Fee);

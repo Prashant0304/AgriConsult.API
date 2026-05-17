@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgriConsult.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f3ad0bd369611cc0cc7b8f11e33eb65d171c254f")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgriConsult.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgriConsult.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

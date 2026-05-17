@@ -5,25 +5,82 @@
     "version": "1.0"
   },
   "paths": {
-    "/weatherforecast": {
+    "/api/v1/experts": {
       "get": {
         "tags": [
           "AgriConsult.API"
         ],
-        "operationId": "GetWeatherForecast",
+        "operationId": "GetExperts",
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AgriConsult.API"
+        ],
+        "operationId": "CreateExpert",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpertRequest"
               }
             }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/experts/{id}": {
+      "get": {
+        "tags": [
+          "AgriConsult.API"
+        ],
+        "operationId": "GetExpertById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AgriConsult.API"
+        ],
+        "operationId": "DeleteExpert",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -31,25 +88,20 @@
   },
   "components": {
     "schemas": {
-      "WeatherForecast": {
+      "ExpertRequest": {
         "type": "object",
         "properties": {
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "summary": {
+          "name": {
             "type": "string",
             "nullable": true
           },
-          "temperatureF": {
+          "specialization": {
+            "type": "string",
+            "nullable": true
+          },
+          "fee": {
             "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "format": "int32"
           }
         },
         "additionalProperties": false
