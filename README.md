@@ -205,3 +205,37 @@ ASPNETCORE_ENVIRONMENT=Development dotnet run --no-launch-profile
 ```
 
 **Connection string (local dev only):**
+
+---
+
+### Day 4 — JWT Authentication
+
+**What I built:**
+- User registration endpoint with BCrypt password hashing
+- Login endpoint that returns a JWT token
+- JWT token validation on protected endpoints
+- Swagger configured with Authorize button for testing
+- .RequireAuthorization() on POST and DELETE endpoints
+
+**Auth flow tested:**
+- POST /api/auth/register → 201 Created
+- POST /api/auth/login → 200 OK with JWT token
+- POST /api/v1/experts WITH token → 201 Created ✅
+- POST /api/v1/experts WITHOUT token → 401 Unauthorized ✅
+
+**Key concepts learned:**
+- JWT = header.payload.signature — three parts base64 encoded
+- BCrypt hashes passwords — never store plain text
+- Claims = data stored inside the token (userId, email, role)
+- UseAuthentication must come BEFORE UseAuthorization in pipeline
+- .RequireAuthorization() protects individual endpoints
+
+---
+
+## 90-Day Challenge Progress
+
+- [x] Day 1 — Middleware Pipeline ✅
+- [x] Day 2 — REST API Best Practices ✅
+- [x] Day 3 — Entity Framework Core ✅
+- [x] Day 4 — JWT Authentication ✅
+- [ ] Day 5 — SOLID Principles
