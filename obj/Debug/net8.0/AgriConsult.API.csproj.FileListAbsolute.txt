@@ -146,3 +146,6 @@ D:\90days-crack\AgriConsult.API\obj\Debug\net8.0\refint\AgriConsult.API.dll
 D:\90days-crack\AgriConsult.API\obj\Debug\net8.0\AgriConsult.API.pdb
 D:\90days-crack\AgriConsult.API\obj\Debug\net8.0\AgriConsult.API.genruntimeconfig.cache
 D:\90days-crack\AgriConsult.API\obj\Debug\net8.0\ref\AgriConsult.API.dll
+D:\90days-crack\AgriConsult.API\bin\Debug\net8.0\BCrypt-Net-Next.dll
+D:\90days-crack\AgriConsult.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\90days-crack\AgriConsult.API\bin\Debug\net8.0\Microsoft.Bcl.TimeProvider.dll
