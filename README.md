@@ -239,3 +239,44 @@ ASPNETCORE_ENVIRONMENT=Development dotnet run --no-launch-profile
 - [x] Day 3 — Entity Framework Core ✅
 - [x] Day 4 — JWT Authentication ✅
 - [ ] Day 5 — SOLID Principles
+
+---
+
+### Day 5 — SOLID Principles
+
+**What I learned:**
+No code changes today — pure concept learning with AgriConsult examples.
+
+**S — Single Responsibility Principle**
+One class should have one reason to change.
+AgriConsult example: JwtService only generates tokens. AppDbContext only handles database. Each class has one job.
+
+**O — Open/Closed Principle**
+Open for extension, closed for modification.
+AgriConsult example: Adding WhatsApp notifications means adding a new class implementing INotificationChannel — EmailNotification and SmsNotification are never touched.
+
+**L — Liskov Substitution Principle**
+Child class must be replaceable for parent without breaking anything.
+AgriConsult example: EmailNotification and SmsNotification both extend NotificationBase and work correctly wherever NotificationBase is expected.
+
+**I — Interface Segregation Principle**
+Classes should not be forced to implement methods they do not need.
+AgriConsult example: IAuthService is separate from IProfileService — AuthService is not forced to implement profile methods it never uses.
+
+**D — Dependency Inversion Principle**
+Depend on abstractions not concrete implementations. Receive dependencies from outside.
+AgriConsult example: JwtService receives IConfiguration through constructor injection. AppDbContext is injected by .NET DI container into endpoints automatically.
+
+**Interview answers prepared for all 5 principles.**
+
+---
+
+## 90-Day Challenge Progress
+
+- [x] Day 1 — Middleware Pipeline ✅
+- [x] Day 2 — REST API Best Practices ✅
+- [x] Day 3 — Entity Framework Core ✅
+- [x] Day 4 — JWT Authentication ✅
+- [x] Day 5 — SOLID Principles ✅
+- [ ] Day 6 — SOLID Principles in Code
+- [ ] Day 7 — Weekend Build: Task Manager API
