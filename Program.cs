@@ -1,6 +1,8 @@
 using AgriConsult.API.Data;
 using AgriConsult.API.Models;
 using AgriConsult.API.Services;
+using AgriConsult.API.Services.Implementations;
+using AgriConsult.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -68,6 +70,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IExpertService, ExpertService>();
+builder.Services.AddScoped<INotificationService, EmailNotificationService>();
+
 
 var app = builder.Build();
 
@@ -93,28 +99,20 @@ app.UseAuthorization();
 // ── Auth Endpoints ────────────────────────────────────────────
 
 // REGISTER
-app.MapPost("/api/auth/register", async (RegisterRequest req, AppDbContext db) =>
+
+// REGISTER — now uses IUserService
+app.MapPost("/api/auth/register", async (
+    RegisterRequest req, IUserService userService) =>
 {
-    // Check if email already exists
-    var exists = await db.Users.AnyAsync(u => u.Email == req.Email);
-    if (exists)
+    if (await userService.EmailExistsAsync(req.Email))
         return Results.BadRequest(new
         {
             status = 400,
             message = "Email already registered"
         });
 
-    // Hash the password — NEVER store plain text
-    var user = new User
-    {
-        FullName = req.FullName,
-        Email = req.Email,
-        PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
-        Role = "Farmer"
-    };
-
-    db.Users.Add(user);
-    await db.SaveChangesAsync();
+    var user = await userService.CreateUserAsync(
+        req.FullName, req.Email, req.Password);
 
     return Results.Created($"/api/users/{user.Id}", new
     {
@@ -126,22 +124,27 @@ app.MapPost("/api/auth/register", async (RegisterRequest req, AppDbContext db) =
 })
 .WithName("Register");
 
-// LOGIN
+// LOGIN — now uses IUserService
 app.MapPost("/api/auth/login", async (
-    LoginRequest req, AppDbContext db, JwtService jwt) =>
+    LoginRequest req,
+    IUserService userService,
+    JwtService jwt,
+    INotificationService notification) =>
 {
-    // Find user by email
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Email == req.Email);
-    if (user is null)
-        return Results.Unauthorized();
+    var user = await userService.GetByEmailAsync(req.Email);
+    if (user is null) return Results.Unauthorized();
 
-    // Verify password
-    var validPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash);
-    if (!validPassword)
-        return Results.Unauthorized();
+    var valid = BCrypt.Net.BCrypt.Verify(
+        req.Password, user.PasswordHash);
+    if (!valid) return Results.Unauthorized();
 
-    // Generate JWT token
+    // Generate token
     var token = jwt.GenerateToken(user);
+
+    // Send login notification — OCP in action
+    // Swap EmailNotification for SMS in DI = zero code change here
+    await notification.SendAsync(
+        user.Email, $"New login detected for {user.FullName}");
 
     return Results.Ok(new
     {
@@ -154,20 +157,19 @@ app.MapPost("/api/auth/login", async (
 })
 .WithName("Login");
 
-// ── Expert Endpoints (Day 2 + Day 3) ─────────────────────────
-
-// GET all experts — PUBLIC (no auth needed)
-app.MapGet("/api/v1/experts", async (AppDbContext db) =>
+// GET experts — now uses IExpertService
+app.MapGet("/api/v1/experts", async (IExpertService expertService) =>
 {
-    var experts = await db.Experts.ToListAsync();
+    var experts = await expertService.GetAllAsync();
     return Results.Ok(experts);
 })
 .WithName("GetExperts");
 
-// GET single expert — PUBLIC
-app.MapGet("/api/v1/experts/{id}", async (int id, AppDbContext db) =>
+// GET expert by id — now uses IExpertService
+app.MapGet("/api/v1/experts/{id}", async (
+    int id, IExpertService expertService) =>
 {
-    var expert = await db.Experts.FindAsync(id);
+    var expert = await expertService.GetByIdAsync(id);
     if (expert is null)
         return Results.NotFound(new
         {
@@ -178,9 +180,9 @@ app.MapGet("/api/v1/experts/{id}", async (int id, AppDbContext db) =>
 })
 .WithName("GetExpertById");
 
-// POST create expert — PROTECTED (must be logged in)
-app.MapPost("/api/v1/experts", async (Expert expert, AppDbContext db,
-    ClaimsPrincipal user) =>
+// POST expert — now uses IExpertService
+app.MapPost("/api/v1/experts", async (
+    Expert expert, IExpertService expertService) =>
 {
     if (string.IsNullOrWhiteSpace(expert.Name))
         return Results.BadRequest(new
@@ -190,25 +192,26 @@ app.MapPost("/api/v1/experts", async (Expert expert, AppDbContext db,
             errors = new[] { "Name is required" }
         });
 
-    db.Experts.Add(expert);
-    await db.SaveChangesAsync();
-    return Results.Created($"/api/v1/experts/{expert.Id}", expert);
+    var created = await expertService.CreateAsync(expert);
+    return Results.Created(
+        $"/api/v1/experts/{created.Id}", created);
 })
 .WithName("CreateExpert")
-.RequireAuthorization(); // ← Only logged-in users
+.RequireAuthorization();
 
-// DELETE expert — PROTECTED
-app.MapDelete("/api/v1/experts/{id}", async (int id, AppDbContext db) =>
+// DELETE expert — now uses IExpertService
+app.MapDelete("/api/v1/experts/{id}", async (
+    int id, IExpertService expertService) =>
 {
-    var expert = await db.Experts.FindAsync(id);
+    var expert = await expertService.GetByIdAsync(id);
     if (expert is null)
         return Results.NotFound(new
         {
             status = 404,
             message = $"Expert {id} not found"
         });
-    db.Experts.Remove(expert);
-    await db.SaveChangesAsync();
+
+    await expertService.DeleteAsync(expert);
     return Results.NoContent();
 })
 .WithName("DeleteExpert")
