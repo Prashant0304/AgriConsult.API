@@ -280,3 +280,43 @@ AgriConsult example: JwtService receives IConfiguration through constructor inje
 - [x] Day 5 — SOLID Principles ✅
 - [ ] Day 6 — SOLID Principles in Code
 - [ ] Day 7 — Weekend Build: Task Manager API
+
+---
+
+### Day 6 — SOLID Principles in Code
+
+**What I built:**
+Refactored AgriConsult to implement all 5 SOLID principles in real C# code.
+
+**Files created:**
+- Services/Interfaces/IUserService.cs
+- Services/Interfaces/INotificationService.cs
+- Services/Interfaces/IExpertService.cs (IExpertReader + IExpertWriter)
+- Services/Implementations/UserService.cs
+- Services/Implementations/ExpertService.cs
+- Services/Implementations/EmailNotificationService.cs
+- Services/Implementations/SmsNotificationService.cs
+
+**SOLID applied:**
+- S: UserService, ExpertService, JwtService each have ONE job
+- O: INotificationService — add WhatsApp by adding new class, zero changes to existing
+- L: IExpertReader/IExpertWriter — any implementation substitutable
+- I: IExpertReader separate from IExpertWriter — no forced unused methods
+- D: All services injected via DI container — endpoints never use `new`
+
+**Result:**
+Login endpoint now receives IUserService and INotificationService
+through dependency injection. Swap Email for SMS = one line change in DI.
+Zero changes to business logic.
+
+---
+
+## 90-Day Challenge Progress
+
+- [x] Day 1 — Middleware Pipeline ✅
+- [x] Day 2 — REST API Best Practices ✅
+- [x] Day 3 — Entity Framework Core ✅
+- [x] Day 4 — JWT Authentication ✅
+- [x] Day 5 — SOLID Principles (concepts) ✅
+- [x] Day 6 — SOLID Principles in Code ✅
+- [ ] Day 7 — Weekend Build
