@@ -320,3 +320,53 @@ Zero changes to business logic.
 - [x] Day 5 — SOLID Principles (concepts) ✅
 - [x] Day 6 — SOLID Principles in Code ✅
 - [ ] Day 7 — Weekend Build
+
+---
+
+### Day 7 — Weekend Build: Consultation Booking System
+
+**What I built:**
+A complete end-to-end feature combining everything from Days 1-6 into one real workflow.
+
+**New files:**
+- Models/Consultation.cs
+- Services/Interfaces/IConsultationService.cs
+- Services/Implementations/ConsultationService.cs
+
+**Endpoints added:**
+- POST /api/v1/consultations — book a consultation (protected)
+- GET /api/v1/consultations/my — view my consultations (protected)
+- PUT /api/v1/consultations/{id}/status — update status (protected)
+
+**How everything connects:**
+- Day 1: Middleware logs every consultation request
+- Day 2: REST conventions — 201 Created, 404 Not Found
+- Day 3: EF Core persists consultations to SQL Server
+- Day 4: JWT identifies the farmer booking the consultation
+- Day 5+6: ConsultationService follows SOLID — injects AppDbContext
+  and INotificationService through DI, single responsibility,
+  notification channel swappable without code changes
+
+**Tested flow:**
+Login → Token → Book Consultation → 201 Created →
+[EMAIL] notification printed automatically →
+GET my consultations → 200 OK with booked consultation
+
+**Key lesson:**
+Interface and implementation method names must match exactly —
+fixed a GetFarmerAsync vs GetByFarmerAsync mismatch today.
+Also resolved a file-lock build error caused by a still-running
+dotnet process from an earlier terminal session.
+
+---
+
+## 90-Day Challenge Progress
+
+- [x] Day 1 — Middleware Pipeline ✅
+- [x] Day 2 — REST API Best Practices ✅
+- [x] Day 3 — Entity Framework Core ✅
+- [x] Day 4 — JWT Authentication ✅
+- [x] Day 5 — SOLID Principles (concepts) ✅
+- [x] Day 6 — SOLID Principles in Code ✅
+- [x] Day 7 — Weekend Build: Consultation Booking ✅
+- [ ] Day 8 — TBD
