@@ -73,6 +73,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IExpertService, ExpertService>();
 builder.Services.AddScoped<INotificationService, EmailNotificationService>();
+builder.Services.AddScoped<IConsultationService, ConsultationService>();
 
 
 var app = builder.Build();
@@ -199,6 +200,66 @@ app.MapPost("/api/v1/experts", async (
 .WithName("CreateExpert")
 .RequireAuthorization();
 
+// ── Consultation Endpoints (Day 7) ──────────────────────────
+
+// BOOK a consultation — PROTECTED (must be logged in)
+app.MapPost("/api/v1/consultations", async (
+    BookConsultationRequest req,
+    IConsultationService consultationService,
+    ClaimsPrincipal user) =>
+{
+    // Get logged-in user's ID from JWT claims
+    var farmerIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (farmerIdClaim is null)
+        return Results.Unauthorized();
+
+    var farmerId = int.Parse(farmerIdClaim.Value);
+
+    var consultation = await consultationService.BookAsync(
+        farmerId, req.ExpertId, req.Topic);
+
+    return Results.Created(
+        $"/api/v1/consultations/{consultation.Id}", consultation);
+})
+.WithName("BookConsultation")
+.RequireAuthorization();
+
+// GET my consultations — PROTECTED
+app.MapGet("/api/v1/consultations/my", async (
+    IConsultationService consultationService,
+    ClaimsPrincipal user) =>
+{
+    var farmerIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (farmerIdClaim is null)
+        return Results.Unauthorized();
+
+    var farmerId = int.Parse(farmerIdClaim.Value);
+    var consultations = await consultationService.GetByFarmerAsync(farmerId);
+
+    return Results.Ok(consultations);
+})
+.WithName("GetMyConsultations")
+.RequireAuthorization();
+
+// UPDATE consultation status — PROTECTED, Admin/Expert only
+app.MapPut("/api/v1/consultations/{id}/status", async (
+    int id, UpdateStatusRequest req,
+    IConsultationService consultationService) =>
+{
+    var updated = await consultationService.UpdateStatusAsync(id, req.Status);
+    if (!updated)
+        return Results.NotFound(new
+        {
+            status = 404,
+            message = $"Consultation {id} not found"
+        });
+
+    return Results.Ok(new { message = "Status updated", id, req.Status });
+})
+.WithName("UpdateConsultationStatus")
+.RequireAuthorization();
+
+
 // DELETE expert — now uses IExpertService
 app.MapDelete("/api/v1/experts/{id}", async (
     int id, IExpertService expertService) =>
@@ -218,7 +279,8 @@ app.MapDelete("/api/v1/experts/{id}", async (
 .RequireAuthorization(); // ← Only logged-in users
 
 app.Run();
-
+record BookConsultationRequest(int ExpertId, string Topic);
+record UpdateStatusRequest(string Status);
 // ── Request Models ────────────────────────────────────────────
 record RegisterRequest(string FullName, string Email, string Password);
 record LoginRequest(string Email, string Password);

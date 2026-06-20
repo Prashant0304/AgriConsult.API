@@ -10,6 +10,7 @@ namespace AgriConsult.API.Data
 
         public DbSet<Expert> Experts { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Consultation> Consultations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Expert>()
